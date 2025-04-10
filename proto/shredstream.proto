@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package shredstream;
+
+service ShredstreamProxy {
+  rpc SubscribeEntries(SubscribeEntriesRequest) returns (stream Entry);
+}
+
+message SubscribeEntriesRequest {
+  // We can add some filters here
+}
+
+message Entry {
+  uint64 slot = 1;
+
+  // Vec<Entry>: https://docs.rs/solana-entry/latest/solana_entry/entry/struct.Entry.html
+  bytes entries = 2;
+}
