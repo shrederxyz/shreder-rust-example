@@ -6,7 +6,7 @@ use shredstream::{shredstream_proxy_client::ShredstreamProxyClient, SubscribeEnt
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let entrypoint = "http://84.32.188.75:9991"
+    let entrypoint = "http:/localhost:9991";
     let mut client = ShredstreamProxyClient::connect(entrypoint)
         .await
         .unwrap();
