@@ -2,14 +2,13 @@ pub mod shredstream {
     tonic::include_proto!("shredstream");
 }
 
-use shredstream::{shredstream_proxy_client::ShredstreamProxyClient, SubscribeEntriesRequest};
+use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
+use tonic::{Response, Status, Streaming};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let entrypoint = "http:/localhost:9991";
-    let mut client = ShredstreamProxyClient::connect(entrypoint)
-        .await
-        .unwrap();
+    let entrypoint = "http://localhost:9991";
+    let mut client = ShredstreamProxyClient::connect(entrypoint).await.unwrap();
     let mut stream = client
         .subscribe_entries(SubscribeEntriesRequest {})
         .await

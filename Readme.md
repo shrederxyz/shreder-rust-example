@@ -1,12 +1,12 @@
 # Shreder Rust Example
 
 Shreder is the fastest way to get block updates and receive transaction data on Solana.
-Behind the scenes, Shreder is a shred streaming service. We stream raw transaction data (shreds) directly to your app — no polling, no delays.
+Basically, Shreder is a shred streaming service. We stream raw transaction data (shreds) directly to your app — no polling, no delays.
 Shreder allows you to receive streaming data with Solana network transactions in real-time (0 block).
 
 ## Description
 
-This repository demonstrates a basic project to test Shreder and consume transactions.
+This repository demonstrates a basic project to test Shreder and consume transactions. It contains 2 examples with entries and transactions consuming.
 
 ## Getting Started
 
@@ -27,14 +27,22 @@ Before you begin, make sure you have the following installed:
 
 2.  **Configure the project**
 
-    In the src/main.rs file change http://127.0.0.1:9999 to url link provided by the Shreder team. Connect with us via official website or Discord.
+    In the src/examples/entries/main.rs or src/examples/transactions/main.rs file change http://localhost:9991 to url link provided by the Shreder team. Connect with us via official website or Discord.
 
 3. **Run script**
 
-```bash
-   cargo run
-```
-For additional information use [documentation](/documentation.md)
+   To run [entries](/src/examples/entries/) example
+   ```bash
+      cargo run --example entries
+   ```
+   For additional information about entries use [documentation](/src/examples/entries/Readme.md)
+
+   To run [transactions](/src/examples/transactions/) example
+   ```bash
+      cargo run --example transactions
+   ```
+   For additional information about transactions use [documentation](/src/examples/transactions/Readme.md)
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/YKFeeVxU
+Discord: https://discord.gg/5FPgveHn
+X: https://x.com/ShrederXyz

@@ -3,14 +3,25 @@ name = "shreder-client-example"
 version = "0.1.0"
 edition = "2021"
 
+[[example]]
+name = "entries"
+path = "examples/main.rs"
+
+[[example]]
+name = "transactions"
+path = "src/examples/transactions/main.rs"
+
 [dependencies]
 bincode = "1.3.3"
+futures = "0.3.24"
 solana-entry = "=2.2.1"
 tokio = { version = "1", features = ["full"] }
 tonic = { version = "0.10", features = ["tls", "tls-roots", "tls-webpki-roots"] }
+maplit = "1.0.2"
 prost = "0.12"
 prost-types = "0.12"
 protobuf-src = "1"
+bs58 = "0.4"
 
 [build-dependencies]
 protobuf-src = "1"

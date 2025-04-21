@@ -1,13 +1,19 @@
 # Shreder ShredStream Client Implementation Guide
 
 Shreder is the fastest way to get block updates and receive transaction data on Solana.
-Behind the scenes, Shreder is a shred streaming service. We stream raw transaction data (shreds) directly to your app — no polling, no delays.
+Basically, Shreder is a shred streaming service. We stream raw transaction data (shreds) directly to your app — no polling, no delays.
 
 This guide describes the process of creating a client for Shreder ShredStream using Rust and gRPC. Shreder allows you to receive streaming data with Solana network transactions in real-time (0 block).
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/YKFeeVxU
+Discord: https://discord.gg/5FPgveHn
+X: https://x.com/ShrederXyz
 
+To run this example please use the following command
+```bash
+cargo run --example entries 
+```
+# Example reconstruction
 ## 1. Setting Up the Project and Dependencies
 
 ### a. Create a New Cargo Project
@@ -51,7 +57,7 @@ syntax = "proto3";
 
 package shredstream;
 
-service ShredstreamProxy {
+service ShrederService {
   rpc SubscribeEntries(SubscribeEntriesRequest) returns (stream SlotEntries);
 }
 
@@ -88,7 +94,7 @@ pub mod shredstream {
     tonic::include_proto!("shredstream");
 }
 
-use shredstream::{shredstream_proxy_client::ShredstreamProxyClient, SubscribeEntriesRequest};
+use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
 use solana_entry::entry::Entry;
 ```
 
@@ -104,7 +110,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     println!("Connecting to ShredStream server at: {}", endpoint);
     
-    let mut client = ShredstreamProxyClient::connect(endpoint)
+    let mut client = ShrederServiceClient::connect(endpoint)
         .await?;
     
     println!("Successfully connected to server");
@@ -176,7 +182,7 @@ pub mod shredstream {
     tonic::include_proto!("shredstream");
 }
 
-use shredstream::{shredstream_proxy_client::ShredstreamProxyClient, SubscribeEntriesRequest};
+use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
 use solana_entry::entry::Entry;
 
 #[tokio::main]
@@ -184,7 +190,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let endpoint = "http://127.0.0.1:9999";
     println!("Connecting to ShredStream server at: {}", endpoint);
     
-    let mut client = ShredstreamProxyClient::connect(endpoint)
+    let mut client = ShrederServiceClient::connect(endpoint)
         .await?;
     
     println!("Successfully connected to server");
@@ -242,6 +248,7 @@ Make sure to update the endpoin in this example. You can get access by contactin
 
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/YKFeeVxU
+Discord: https://discord.gg/5FPgveHn
+X: https://x.com/ShrederXyz
 
 Connect with us to get access to Shreder.
