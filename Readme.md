@@ -22,7 +22,7 @@ Before you begin, make sure you have the following installed:
 ### Usage
 1. **Clone the repository**
   ```bash
-   git clone https://github.com/shrederxyz/shreder-rust-example.git
+   git clone https://github.com/shrederexamples/shreder-rust-example.git
    ```
 
 2.  **Configure the project**
