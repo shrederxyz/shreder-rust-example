@@ -5,7 +5,7 @@ edition = "2021"
 
 [[example]]
 name = "entries"
-path = "examples/main.rs"
+path = "src/examples/entries/main.rs"
 
 [[example]]
 name = "transactions"
