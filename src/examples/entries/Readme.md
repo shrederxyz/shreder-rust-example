@@ -33,7 +33,7 @@ Open the Cargo.toml file and add the required dependencies:
 [package]
 name = "shredstream_client"
 version = "0.1.0"
-edition = "2021"
+edition = "2025"
 
 [dependencies]
 tonic = "0.9"                             # Core gRPC library
@@ -248,7 +248,6 @@ Make sure to update the endpoin in this example. You can get access by contactin
 
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/5FPgveHn
 X: https://x.com/ShrederXyz
 
 Connect with us to get access to Shreder.
