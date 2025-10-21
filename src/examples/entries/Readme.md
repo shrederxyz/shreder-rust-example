@@ -6,7 +6,7 @@ Basically, Shreder is a shred streaming service. We stream raw transaction data 
 This guide describes the process of creating a client for Shreder ShredStream using Rust and gRPC. Shreder allows you to receive streaming data with Solana network transactions in real-time (0 block).
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/5FPgveHn
+Discord: https://discord.gg/8qEGZKPVDV
 X: https://x.com/ShrederXyz
 
 To run this example please use the following command
