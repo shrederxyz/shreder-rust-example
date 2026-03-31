@@ -7,7 +7,7 @@ use tonic::{Response, Status, Streaming};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let entrypoint = "http://localhost:9991";
+    let entrypoint = "http://fra1.shreder.xyz:9991";
     let mut client = ShrederServiceClient::connect(entrypoint).await.unwrap();
     let mut stream = client
         .subscribe_entries(SubscribeEntriesRequest {})

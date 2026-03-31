@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package shreder_binary;
+
+import "google/protobuf/timestamp.proto";
+
+service ShrederBinaryService {
+  rpc SubscribeBinaryTransactions(stream SubscribeBinaryTransactionsRequest) returns (stream SubscribeBinaryTransactionsResponse);
+}
+
+message SubscribeBinaryTransactionsRequest {
+  map<string, SubscribeRequestFilterBinaryTransactions> transactions = 3;
+}
+
+message SubscribeBinaryTransactionsResponse {
+  repeated string filters = 1;
+  SubscribeUpdateBinaryTransaction transaction = 4;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message SubscribeUpdateBinaryTransaction {
+  BinaryTransaction transaction = 1;
+  uint64 slot = 2;
+}
+
+message SubscribeRequestFilterBinaryTransactions {
+  repeated string account_include = 3;
+  repeated string account_exclude = 4;
+  repeated string account_required = 6;
+}
+
+message BinaryTransaction {
+  repeated bytes signatures = 1;
+  // Serialized bytes of VersionedTransaction: https://docs.rs/solana-transaction/3.0.2/solana_transaction/versioned/struct.VersionedTransaction.html
+  bytes binary_transaction = 3;
+}

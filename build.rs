@@ -8,6 +8,12 @@ fn main() {
     }
 
     configure()
-        .compile(&["proto/shredstream.proto"], &["protos"])
+        .compile(
+            &[
+                "proto/shredstream.proto",
+                "proto/shreder_binary.proto",
+            ],
+            &["proto"],
+        )
         .unwrap();
 }

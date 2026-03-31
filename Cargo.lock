@@ -2701,6 +2701,7 @@ dependencies = [
  "prost-types",
  "protobuf-src",
  "solana-entry",
+ "solana-transaction",
  "tokio",
  "tonic",
  "tonic-build",

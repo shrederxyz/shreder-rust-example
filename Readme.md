@@ -6,7 +6,7 @@ Shreder allows you to receive streaming data with Solana network transactions in
 
 ## Description
 
-This repository demonstrates a basic project to test Shreder and consume transactions. It contains 2 examples with entries and transactions consuming.
+This repository demonstrates a basic project to test Shreder and consume transactions. It contains three examples: **entries**, **transactions**, and **binary** (raw `VersionedTransaction` bytes).
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ Before you begin, make sure you have the following installed:
 
 2.  **Configure the project**
 
-    In the src/examples/entries/main.rs or src/examples/transactions/main.rs file change http://localhost:9991 to url link provided by the Shreder team. Connect with us via official website or Discord.
+    In `src/examples/entries/main.rs`, `src/examples/transactions/main.rs`, or `src/examples/binary/main.rs`, change the example endpoint (e.g. `http://…:9991`) to the URL provided by the Shreder team. Connect with us via the official website or Discord.
 
 3. **Run script**
 
@@ -42,6 +42,12 @@ Before you begin, make sure you have the following installed:
       cargo run --example transactions
    ```
    For additional information about transactions use [documentation](/src/examples/transactions/Readme.md)
+
+   To run [binary](/src/examples/binary/) example (gRPC `SubscribeBinaryTransactions`: protobuf field `binary_transaction` carries serialized [VersionedTransaction](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html); the example deserializes it with `bincode`)
+   ```bash
+      cargo run --example binary
+   ```
+   For additional information about binary transactions use [documentation](/src/examples/binary/Readme.md)
 
 Shreder website: https://shreder.xyz/
 Discord: https://discord.gg/5FPgveHn
