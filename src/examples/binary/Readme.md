@@ -6,7 +6,7 @@ Basically, Shreder is a shred streaming service. We stream raw transaction data 
 This guide describes how to consume the **binary transactions** gRPC API: each update includes a `bytes` payload that is a serialized Solana [`VersionedTransaction`](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html). You deserialize it in Rust (this example uses `bincode`) and process instructions, accounts, etc. locally.
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/5FPgveHn
+Discord: discord.gg/8qEGZKPVDV
 X: https://x.com/ShrederXyz
 
 To run this example please use the following command
@@ -230,7 +230,7 @@ To build and run from this repository:
 cargo run --example binary
 ```
 
-Make sure to update the endpoint in the example. You can get access by contacting the Shreder team via the official Discord or website.
+Make sure to update the endpoint in the example. You can get access by contacting the Shreder team via the official Discord, Telegram or website.
 
 ## 6. Further Resources
 
@@ -239,7 +239,7 @@ Make sure to update the endpoint in the example. You can get access by contactin
 - [VersionedTransaction (solana-transaction)](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html)
 
 Shreder website: https://shreder.xyz/
-Discord: https://discord.gg/5FPgveHn
+Discord: discord.gg/8qEGZKPVDV
 X: https://x.com/ShrederXyz
 
 Connect with us to get access to Shreder.
