@@ -6,7 +6,7 @@ Shreder allows you to receive streaming data with Solana network transactions in
 
 ## Description
 
-This repository demonstrates a basic project to test Shreder and consume transactions. It contains three examples: **entries**, **transactions**, and **binary** (raw `VersionedTransaction` bytes).
+This repository demonstrates a basic project to test Shreder and consume transactions. It contains four examples: **entries**, **transactions**, **binary** (raw `VersionedTransaction` bytes), and **preconf** (binary transactions received through the preconf ingest path).
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ Before you begin, make sure you have the following installed:
 
 2.  **Configure the project**
 
-    In `src/examples/entries/main.rs`, `src/examples/transactions/main.rs`, or `src/examples/binary/main.rs`, change the example endpoint (e.g. `http://…:9991`) to the URL provided by the Shreder team. Connect with us via the official website or Discord.
+    In `src/examples/entries/main.rs`, `src/examples/transactions/main.rs`, `src/examples/binary/main.rs`, or `src/examples/preconf/main.rs`, change the example endpoint (e.g. `http://…:9991`) to the URL provided by the Shreder team. Connect with us via the official website or Discord.
 
 3. **Run script**
 
@@ -48,6 +48,12 @@ Before you begin, make sure you have the following installed:
       cargo run --example binary
    ```
    For additional information about binary transactions use [documentation](/src/examples/binary/Readme.md)
+
+   To run [preconf](/src/examples/preconf/) example (binary transactions received through the preconf ingest path)
+   ```bash
+      cargo run --example preconf
+   ```
+   For additional information about preconf transactions use [documentation](/src/examples/preconf/Readme.md)
 
 Shreder website: https://shreder.xyz/
 Discord: https://discord.gg/8qEGZKPVDV
