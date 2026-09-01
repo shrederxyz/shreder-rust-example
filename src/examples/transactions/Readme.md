@@ -61,9 +61,8 @@ Create a directory named `proto` in the root of your project, and add the `shred
 syntax = "proto3";
 
 package shredstream;
+
 import "google/protobuf/timestamp.proto";
-
-
 
 service ShrederService {
   rpc SubscribeEntries(SubscribeEntriesRequest) returns (stream Entry);
@@ -128,6 +127,15 @@ message Message {
   repeated CompiledInstruction instructions = 4;
   bool versioned = 5;
   repeated MessageAddressTableLookup address_table_lookups = 6;
+  // Set only for V1 transaction messages (SIMD-0385). Absent for legacy/V0.
+  optional TransactionConfig config = 7;
+}
+
+message TransactionConfig {
+  optional uint64 priority_fee = 1;
+  optional uint32 compute_unit_limit = 2;
+  optional uint32 loaded_accounts_data_size_limit = 3;
+  optional uint32 heap_size = 4;
 }
 
 message Transaction {
@@ -220,18 +228,28 @@ Send the filter request into the outgoing channel
     let _ = subscribe_tx.send(request).await;
 ```
 
-### d. Handle New Entries
+### d. Handle New Transactions
 
 With this stream, you will receive transactions based on your filter. Each transaction follows the format described in the [proto file](/proto/shredstream.proto).\
+For V1 messages (SIMD-0385), `Message.config` may contain optional `TransactionConfig` (`priority_fee`, `compute_unit_limit`, etc.); for legacy/V0 it is absent.\
 **NOTE:** A transaction may be sent multiple times. Please ensure on your end that you process each transaction only once.
 ```rust
-   while let Some(message) = stream.message().await.unwrap() {
+    while let Some(message) = stream.message().await.unwrap() {
+        let update = message.transaction.expect("transaction update must be present");
+        let tx = update.transaction.expect("transaction must be present");
+        // `Message.config` is optional: set only for V1 (SIMD-0385), absent for legacy/V0.
+        let config = tx.message.as_ref().and_then(|m| m.config.clone());
+
         println!(
-            "Filters: {:?}, Sig: {:?}",
+            "Filters: {:?}, Sig: {:?}, slot: {}, config: {}",
             message.filters,
-            bs58::encode(&message.transaction.unwrap().transaction.unwrap().signatures[0])
-                .into_string()
-        )
+            bs58::encode(&tx.signatures[0]).into_string(),
+            update.slot,
+            match &config {
+                Some(c) => format!("{:?}", c),
+                None => "none (legacy/v0)".to_owned(),
+            },
+        );
     }
 
     Ok(())

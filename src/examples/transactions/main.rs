@@ -32,12 +32,21 @@ async fn main() -> Result<(), std::io::Error> {
     let _ = subscribe_tx.send(request).await;
 
     while let Some(message) = stream.message().await.unwrap() {
+        let update = message.transaction.expect("transaction update must be present");
+        let tx = update.transaction.expect("transaction must be present");
+        // `Message.config` is optional: set only for V1 (SIMD-0385), absent for legacy/V0.
+        let config = tx.message.as_ref().and_then(|m| m.config.clone());
+
         println!(
-            "Filters: {:?}, Sig: {:?}",
+            "Filters: {:?}, Sig: {:?}, slot: {}, config: {}",
             message.filters,
-            bs58::encode(&message.transaction.unwrap().transaction.unwrap().signatures[0])
-                .into_string()
-        )
+            bs58::encode(&tx.signatures[0]).into_string(),
+            update.slot,
+            match &config {
+                Some(c) => format!("{:?}", c),
+                None => "none (legacy/v0)".to_owned(),
+            },
+        );
     }
 
     Ok(())
