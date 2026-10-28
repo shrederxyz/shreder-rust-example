@@ -42,7 +42,7 @@ async fn main() -> Result<(), std::io::Error> {
         let tx = update.transaction.expect("transaction must be present");
 
         let versioned_tx =
-            match bincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
+            match wincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
                 Ok(vt) => vt,
                 Err(e) => {
                     println!("Failed to deserialize VersionedTransaction: {e}");

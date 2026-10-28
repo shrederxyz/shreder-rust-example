@@ -3,7 +3,22 @@ pub mod shredstream {
 }
 
 use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
-use tonic::{Response, Status, Streaming};
+use solana_hash::Hash;
+use solana_transaction::versioned::VersionedTransaction;
+use wincode::{containers, len::BincodeLen, SchemaRead};
+
+// Same limit as `solana_entry::entry::MaxDataShredsLen`: max data shreds per slot * packet size.
+const MAX_DATA_SHREDS_SIZE: usize = 32_768 * 1232;
+
+/// Wire-compatible copy of `solana_entry::entry::Entry`. Entries are wincode-encoded,
+/// which also covers V1 transactions (SIMD-0385); bincode cannot read those.
+#[derive(Debug, SchemaRead)]
+pub struct Entry {
+    pub num_hashes: u64,
+    pub hash: Hash,
+    #[wincode(with = "containers::Vec<VersionedTransaction, BincodeLen<MAX_DATA_SHREDS_SIZE>>")]
+    pub transactions: Vec<VersionedTransaction>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -16,14 +31,13 @@ async fn main() -> Result<(), std::io::Error> {
         .into_inner();
 
     while let Some(slot_entry) = stream.message().await.unwrap() {
-        let entries =
-            match bincode::deserialize::<Vec<solana_entry::entry::Entry>>(&slot_entry.entries) {
-                Ok(e) => e,
-                Err(e) => {
-                    println!("Deserialization failed with err: {e}");
-                    continue;
-                }
-            };
+        let entries = match wincode::deserialize::<Vec<Entry>>(&slot_entry.entries) {
+            Ok(e) => e,
+            Err(e) => {
+                println!("Deserialization failed with err: {e}");
+                continue;
+            }
+        };
 
         println!(
             "slot {}, entries: {}, transactions: {}",

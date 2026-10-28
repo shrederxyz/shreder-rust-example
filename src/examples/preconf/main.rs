@@ -7,7 +7,7 @@ use shreder_binary::{
     shreder_binary_service_client::ShrederBinaryServiceClient, SubscribeBinaryTransactionsRequest,
     SubscribeBinaryTransactionsResponse, SubscribeRequestFilterBinaryTransactions,
 };
-use solana_transaction::versioned::VersionedTransaction;
+use solana_transaction::versioned::{TransactionVersion, VersionedTransaction};
 use tonic::{Response, Streaming};
 
 #[tokio::main]
@@ -41,8 +41,11 @@ async fn main() -> Result<(), std::io::Error> {
         let update = response.transaction.expect("transaction must be present");
         let tx = update.transaction.expect("transaction must be present");
 
+        // V1 transactions (SIMD-0385) use a wire format bincode cannot read:
+        // the message comes first and signatures follow without a length prefix.
+        // wincode handles legacy, V0 and V1.
         let versioned_tx =
-            match bincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
+            match wincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
                 Ok(vt) => vt,
                 Err(e) => {
                     println!("Failed to deserialize VersionedTransaction: {e}");
@@ -50,12 +53,17 @@ async fn main() -> Result<(), std::io::Error> {
                 }
             };
 
+        let version = match versioned_tx.version() {
+            TransactionVersion::Legacy(_) => "legacy".to_owned(),
+            TransactionVersion::Number(n) => format!("v{n}"),
+        };
         let instruction_count = versioned_tx.message.instructions().len();
         println!(
-            "filters: {:?}, slot: {}, preconf: {}, signatures: {}, instructions: {}",
+            "filters: {:?}, slot: {}, preconf: {}, version: {}, signatures: {}, instructions: {}",
             response.filters,
             update.slot,
             update.preconf,
+            version,
             tx.signatures.len(),
             instruction_count,
         );

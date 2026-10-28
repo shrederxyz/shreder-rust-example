@@ -39,8 +39,9 @@ edition = "2025"
 tonic = "0.9"                             # Core gRPC library
 tokio = { version = "1", features = ["full"] } # Asynchronous runtime
 prost = "0.11"                            # Used by Tonic for (de)serialization of messages
-bincode = "1.3.3"                         # For deserializing Solana data
-solana-entry = "1.16"                     # For working with Solana entries
+wincode = { version = "0.6", features = ["derive"] } # For deserializing Solana entries
+solana-transaction = { version = "=6.0.0", features = ["wincode"] } # VersionedTransaction, incl. V1
+solana-hash = { version = "=4.7.0", features = ["wincode"] }         # Entry hash
 
 [build-dependencies]
 tonic-build = "0.9"                       # Used to generate Rust code from proto files
@@ -95,8 +96,24 @@ pub mod shredstream {
 }
 
 use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
-use solana_entry::entry::Entry;
+use solana_hash::Hash;
+use solana_transaction::versioned::VersionedTransaction;
+use wincode::{containers, len::BincodeLen, SchemaRead};
+
+// Same limit as `solana_entry::entry::MaxDataShredsLen`: max data shreds per slot * packet size.
+const MAX_DATA_SHREDS_SIZE: usize = 32_768 * 1232;
+
+/// Wire-compatible copy of `solana_entry::entry::Entry`.
+#[derive(Debug, SchemaRead)]
+pub struct Entry {
+    pub num_hashes: u64,
+    pub hash: Hash,
+    #[wincode(with = "containers::Vec<VersionedTransaction, BincodeLen<MAX_DATA_SHREDS_SIZE>>")]
+    pub transactions: Vec<VersionedTransaction>,
+}
 ```
+
+**NOTE:** entries are deserialized with `wincode`, not `bincode`. They may contain V1 transactions ([SIMD-0385](https://github.com/solana-foundation/solana-improvement-documents/pull/385)), whose wire format (message first, then signatures without a length prefix) is not bincode-compatible: with `bincode` and an old `solana-entry`, a single V1 transaction makes the whole `Vec<Entry>` fail to deserialize. Recent `solana-entry` releases already encode `Entry` with `wincode`, but they pull in validator crates and need a recent rustc, so this example declares the same three-field `Entry` locally.
 
 ### b. Create gRPC Client
 
@@ -140,7 +157,7 @@ Type definitions of the entries and transactions can be found in the [documentat
 
 ```rust
     while let Some(slot_entry) = stream.message().await? {
-        let entries = match bincode::deserialize::<Vec<Entry>>(&slot_entry.entries) {
+        let entries = match wincode::deserialize::<Vec<Entry>>(&slot_entry.entries) {
             Ok(e) => e,
             Err(e) => {
                 println!("Deserialization failed with error: {}", e);
@@ -183,7 +200,21 @@ pub mod shredstream {
 }
 
 use shredstream::{shreder_service_client::ShrederServiceClient, SubscribeEntriesRequest};
-use solana_entry::entry::Entry;
+use solana_hash::Hash;
+use solana_transaction::versioned::VersionedTransaction;
+use wincode::{containers, len::BincodeLen, SchemaRead};
+
+// Same limit as `solana_entry::entry::MaxDataShredsLen`: max data shreds per slot * packet size.
+const MAX_DATA_SHREDS_SIZE: usize = 32_768 * 1232;
+
+/// Wire-compatible copy of `solana_entry::entry::Entry`.
+#[derive(Debug, SchemaRead)]
+pub struct Entry {
+    pub num_hashes: u64,
+    pub hash: Hash,
+    #[wincode(with = "containers::Vec<VersionedTransaction, BincodeLen<MAX_DATA_SHREDS_SIZE>>")]
+    pub transactions: Vec<VersionedTransaction>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -203,7 +234,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Successfully subscribed. Waiting for data...");
     
     while let Some(slot_entry) = stream.message().await? {
-        let entries = match bincode::deserialize::<Vec<Entry>>(&slot_entry.entries) {
+        let entries = match wincode::deserialize::<Vec<Entry>>(&slot_entry.entries) {
             Ok(e) => e,
             Err(e) => {
                 println!("Deserialization failed with error: {}", e);

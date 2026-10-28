@@ -3,7 +3,9 @@
 Shreder is the fastest way to get block updates and receive transaction data on Solana.
 Basically, Shreder is a shred streaming service. We stream raw transaction data (shreds) directly to your app — no polling, no delays.
 
-This guide describes how to consume the **binary transactions** gRPC API: each update includes a `bytes` payload that is a serialized Solana [`VersionedTransaction`](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html). You deserialize it in Rust (this example uses `bincode`) and process instructions, accounts, etc. locally.
+This guide describes how to consume the **binary transactions** gRPC API: each update includes a `bytes` payload that is a serialized Solana [`VersionedTransaction`](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html). You deserialize it in Rust (this example uses `wincode`) and process instructions, accounts, etc. locally.
+
+**NOTE:** use `wincode`, not `bincode`. V1 transactions ([SIMD-0385](https://github.com/solana-foundation/solana-improvement-documents/pull/385)) put the message first and the signatures after it without a length prefix; this layout is not bincode-compatible, so `bincode::deserialize` fails on them. `wincode` with `solana-transaction` 4.0+ (feature `wincode`) reads legacy, V0 and V1.
 
 Shreder website: https://shreder.xyz/
 Discord: https://discord.gg/8qEGZKPVDV
@@ -39,10 +41,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bincode = "1.3.3"
 futures = "0.3.24"
-solana-entry = "=2.2.1"
-solana-transaction = "=2.2.1"
+solana-transaction = { version = "=6.0.0", features = ["wincode"] }
 tokio = { version = "1", features = ["full"] }
 tonic = { version = "0.10", features = ["tls", "tls-roots", "tls-webpki-roots"] }
 maplit = "1.0.2"
@@ -50,6 +50,7 @@ prost = "0.12"
 prost-types = "0.12"
 protobuf-src = "1"
 bs58 = "0.4"
+wincode = "0.6"
 
 [build-dependencies]
 protobuf-src = "1"
@@ -196,7 +197,7 @@ Each response may carry `transaction` with nested `BinaryTransaction`: use `bina
         let update = response.transaction.expect("transaction must be present");
         let tx = update.transaction.expect("transaction must be present");
 
-        let versioned_tx = match bincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
+        let versioned_tx = match wincode::deserialize::<VersionedTransaction>(&tx.binary_transaction) {
             Ok(vt) => vt,
             Err(e) => {
                 println!("Failed to deserialize VersionedTransaction: {e}");

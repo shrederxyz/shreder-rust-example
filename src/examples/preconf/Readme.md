@@ -1,6 +1,13 @@
 # Shreder Preconf Binary Transactions Example
 
-This example consumes binary Solana transactions received through Shreder's preconf ingest path. Each update contains a serialized Solana [`VersionedTransaction`](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html), which the client deserializes with `bincode`.
+This example consumes binary Solana transactions received through Shreder's preconf ingest path. Each update contains a serialized Solana [`VersionedTransaction`](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html), which the client deserializes with `wincode`.
+
+`bincode` cannot read V1 transactions ([SIMD-0385](https://github.com/solana-foundation/solana-improvement-documents/pull/385)): their message comes first and the signatures follow without a length prefix. The example therefore uses `solana-transaction` 6.0 with the `wincode` feature, which reads legacy, V0 and V1:
+
+```toml
+solana-transaction = { version = "=6.0.0", features = ["wincode"] }
+wincode = "0.6"
+```
 
 ## Run the example
 
@@ -10,10 +17,10 @@ Set the endpoint in [`main.rs`](./main.rs) to the binary gRPC endpoint provided 
 cargo run --example preconf
 ```
 
-The example subscribes to Pump.fun transactions and prints the matching filters, slot, transaction source, signature count, and instruction count:
+The example subscribes to Pump.fun transactions and prints the matching filters, slot, transaction source, transaction version, signature count, and instruction count:
 
 ```text
-filters: ["pumpfun"], slot: 123456789, preconf: true, signatures: 1, instructions: 3
+filters: ["pumpfun"], slot: 123456789, preconf: true, version: v1, signatures: 1, instructions: 3
 ```
 
 ## Preconf filter semantics

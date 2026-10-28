@@ -43,7 +43,7 @@ Before you begin, make sure you have the following installed:
    ```
    For additional information about transactions use [documentation](/src/examples/transactions/Readme.md)
 
-   To run [binary](/src/examples/binary/) example (gRPC `SubscribeBinaryTransactions`: protobuf field `binary_transaction` carries serialized [VersionedTransaction](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html); the example deserializes it with `bincode`)
+   To run [binary](/src/examples/binary/) example (gRPC `SubscribeBinaryTransactions`: protobuf field `binary_transaction` carries serialized [VersionedTransaction](https://docs.rs/solana-transaction/latest/solana_transaction/versioned/struct.VersionedTransaction.html); the example deserializes it with `wincode`, which also reads V1 transactions)
    ```bash
       cargo run --example binary
    ```
